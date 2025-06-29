@@ -743,7 +743,8 @@
     } catch (error) {
       console.error('Weather fetch failed:', error);
       
-      if (lastWeatherData && (Date.now() - lastWeatherTimestamp) < 600000) {
+      if (lastWeatherData) {
+        console.log('Using cached weather data due to fetch failure');
         const cached = lastWeatherData;
         weatherEl.textContent = `${cached.temperature}°C | ${cached.fahrenheit}°F, ${cached.description}`;
         
@@ -787,6 +788,7 @@
         if (heatWaves) weatherIcon.appendChild(heatWaves);
         if (windWaves) weatherIcon.appendChild(windWaves);
       } else {
+        // Only show "Weather N/A" if no cached data is available at all
         weatherEl.textContent = "Weather N/A";
       }
     }
@@ -1027,9 +1029,9 @@
           console.error('No location data available from any source');
           placeEl.textContent = "Location N/A";
           
-          if (!lastWeatherData || (Date.now() - lastWeatherTimestamp) > 600000) {
-          weatherEl.textContent = "Weather N/A";
-        }
+          if (!lastWeatherData) {
+            weatherEl.textContent = "Weather N/A";
+          }
         } else {
           console.log('Silent location refresh failed, keeping existing display');
         }
@@ -1039,8 +1041,8 @@
       console.error('Location update failed:', e);
       if (showLoadingMessages) {
       placeEl.textContent = "Location N/A";
-        if (!lastWeatherData || (Date.now() - lastWeatherTimestamp) > 600000) {
-      weatherEl.textContent = "Weather N/A";
+        if (!lastWeatherData) {
+          weatherEl.textContent = "Weather N/A";
         }
       }
     }
